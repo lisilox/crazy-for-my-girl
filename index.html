@@ -2,9 +2,10 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Для Насти</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
   <style>
     :root {
       --wine: #6f1d3d;
@@ -16,14 +17,12 @@
 
     body {
       min-height: 100vh;
-      min-height: 100dvh;
       color: var(--ink);
       background:
         radial-gradient(circle at 18% 20%, rgba(255, 226, 235, 0.95) 0 18%, transparent 34%),
         radial-gradient(circle at 85% 12%, rgba(247, 183, 200, 0.8) 0 14%, transparent 31%),
         linear-gradient(135deg, #fff8f2 0%, #ffeaf0 48%, #f7c3d2 100%);
       overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
     }
 
     .grain::after {
@@ -46,14 +45,9 @@
     .answer-btn {
       transition: transform 220ms ease, background 220ms ease, color 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
     }
-    @media (hover: hover) {
-      .answer-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 18px 42px rgba(111, 29, 61, 0.16);
-      }
-    }
-    .answer-btn:active {
-      transform: scale(0.96);
+    .answer-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 42px rgba(111, 29, 61, 0.16);
     }
     .answer-btn.selected {
       background: var(--wine);
@@ -63,7 +57,6 @@
 
     .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
     .nav-btn:disabled:hover { transform: none; box-shadow: none; }
-    .nav-btn:active:not(:disabled) { transform: scale(0.96); }
 
     .letter-reveal {
       max-height: 0;
@@ -71,7 +64,7 @@
       overflow: hidden;
       transition: max-height 900ms ease, opacity 700ms ease, margin 600ms ease;
     }
-    .letter-reveal.open { max-height: 800px; opacity: 1; }
+    .letter-reveal.open { max-height: 600px; opacity: 1; }
 
     .progress-track { background: rgba(111,29,61,0.16); }
     .progress-fill {
@@ -126,12 +119,29 @@
 
     .warning-text { color: #c9184a; font-weight: 600; }
 
-    /* --- Swipe hint animation --- */
-    @keyframes swipeHint {
-      0%, 100% { transform: translateX(0); opacity: 0.7; }
-      50% { transform: translateX(-10px); opacity: 1; }
+    /* --- мобильная адаптация --- */
+    @media (max-width: 640px) {
+      .hero-title { font-size: 4rem; }
+      #start p { font-size: 1.125rem; line-height: 1.7; }
+      #path h2 { font-size: 2.25rem; }
+      .fact-card { padding: 1.5rem; min-height: 320px; }
+      .fact-card h3 { font-size: 1.5rem; }
+      .fact-card p { font-size: 1rem; line-height: 1.65; }
+      .answer-btn { width: 100%; text-align: center; }
+      #prevBtn, #nextBtn { flex: 1; padding-left: 0.75rem; padding-right: 0.75rem; font-size: 0.875rem; }
+      #hintText { font-size: 0.8125rem; padding: 0 0.5rem; }
+      #reviewList h4 { font-size: 1.05rem; }
+      #reviewList p { font-size: 0.875rem; }
+      #atmosphereFab { bottom: 1rem; right: 1rem; width: 3rem; height: 3rem; font-size: 1.25rem; }
+      .pulse-glow { animation: none; box-shadow: 0 8px 24px rgba(111, 29, 61, 0.22); }
+      html, body { font-size: 15px; }
     }
-    .swipe-hint { animation: swipeHint 2s ease-in-out infinite; display: inline-block; }
+
+    @media (max-width: 380px) {
+      .hero-title { font-size: 3.2rem; }
+      #path h2 { font-size: 1.85rem; }
+      .fact-card { padding: 1.25rem; }
+    }
   </style>
 </head>
 <body class="grain font-sans selection:bg-[#6f1d3d] selection:text-white">
@@ -139,102 +149,108 @@
   <!-- фон -->
   <div id="bg" class="fixed inset-0 -z-10 overflow-hidden">
     <div class="absolute left-1/2 top-1/2 h-[86vmin] w-[86vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/35 blur-3xl"></div>
-    <div class="soft-float absolute bottom-[-10rem] right-[-8rem] h-[20rem] w-[20rem] rounded-full bg-[#d84b76]/20 blur-2xl sm:h-[34rem] sm:w-[34rem]"></div>
-    <div class="soft-float absolute left-[-9rem] top-[9rem] h-[16rem] w-[16rem] rounded-full bg-[#fff4e8]/90 blur-2xl sm:h-[25rem] sm:w-[25rem]" style="animation-delay: -2s"></div>
+    <div class="soft-float absolute bottom-[-10rem] right-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[#d84b76]/20 blur-2xl"></div>
+    <div class="soft-float absolute left-[-9rem] top-[9rem] h-[25rem] w-[25rem] rounded-full bg-[#fff4e8]/90 blur-2xl" style="animation-delay: -2s"></div>
   </div>
 
   <!-- падающие сердечки -->
   <div id="hearts" class="pointer-events-none fixed inset-0 z-0 hidden overflow-hidden"></div>
 
+  <!-- скрытый YouTube-плеер для фоновой музыки -->
+  <div id="ytWrap" class="pointer-events-none fixed left-[-9999px] top-0 h-0 w-0 overflow-hidden opacity-0">
+    <div id="ytPlayer"></div>
+  </div>
+
   <!-- плавающая кнопка атмосферы -->
-  <button id="atmosphereFab" aria-label="Атмосфера" class="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-[#6f1d3d]/25 bg-white/70 text-xl text-[#6f1d3d] shadow-lg backdrop-blur transition active:scale-95 sm:bottom-6 sm:right-6 sm:h-14 sm:w-14 sm:text-2xl">
+  <button id="atmosphereFab" aria-label="Атмосфера" class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-[#6f1d3d]/25 bg-white/70 text-2xl text-[#6f1d3d] shadow-lg backdrop-blur transition hover:-translate-y-1">
     <span id="fabIcon">♡</span>
   </button>
 
   <main class="relative z-10">
     <!-- ПРИВЕТСТВИЕ -->
-    <section class="relative overflow-hidden px-4 py-5 sm:px-10 lg:px-16 sm:py-7">
-      <nav class="flex items-center justify-between text-xs sm:text-sm text-[#6f1d3d]/80">
+    <section class="relative overflow-hidden px-6 py-7 sm:px-10 lg:px-16">
+      <nav class="flex items-center justify-between text-sm text-[#6f1d3d]/80">
         <span class="font-semibold tracking-[0.28em] uppercase">Для Насти</span>
         <a href="#path" class="hidden rounded-full border border-[#6f1d3d]/20 px-5 py-2 transition hover:bg-white/40 sm:inline-block">начать путь</a>
       </nav>
 
-      <div id="start" class="mx-auto flex min-h-[calc(100vh-4rem)] min-h-[calc(100dvh-4rem)] max-w-6xl items-center justify-center text-center px-2">
-        <div class="max-w-4xl w-full">
-          <p class="mb-4 sm:mb-6 text-xs sm:text-sm font-semibold uppercase tracking-[0.3em] sm:tracking-[0.42em] text-[#6f1d3d]/70">маленькое напоминание</p>
-          <h1 class="hero-title text-5xl sm:text-8xl lg:text-9xl font-black leading-[0.88] text-[#6f1d3d]">Настя</h1>
-          <p class="mx-auto mt-5 sm:mt-8 max-w-2xl text-base sm:text-xl lg:text-2xl leading-7 sm:leading-8 text-[#3b1d2d]/78">
+      <div id="start" class="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl items-center justify-center text-center">
+        <div class="max-w-4xl">
+          <p class="mb-6 text-sm font-semibold uppercase tracking-[0.42em] text-[#6f1d3d]/70">маленькое напоминание</p>
+          <h1 class="hero-title text-6xl font-black leading-[0.88] text-[#6f1d3d] sm:text-8xl lg:text-9xl">Настя</h1>
+          <p class="mx-auto mt-8 max-w-2xl text-xl leading-8 text-[#3b1d2d]/78 sm:text-2xl">
             Сейчас тебя ждет интересный путь по фактам о тебе. Если вдруг ты иногда забываешь, какая ты особенная - этот сайт тихо напомнит.
           </p>
-          <div class="mt-7 sm:mt-10 flex flex-col items-center justify-center gap-3 sm:gap-4 sm:flex-row">
-            <a href="#path" class="pulse-glow w-full sm:w-auto rounded-full bg-[#6f1d3d] px-7 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-semibold text-white text-center transition active:scale-95 hover:-translate-y-1 hover:bg-[#57142f]">Открыть путь</a>
-            <button id="musicToggle" class="w-full sm:w-auto rounded-full border border-[#6f1d3d]/25 px-7 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-semibold text-[#6f1d3d] transition active:scale-95 hover:-translate-y-1 hover:bg-white/40">Включить атмосферу</button>
+          <div class="flex w-full flex-col items-center justify-center gap-4 sm:w-auto sm:flex-row">
+            <a href="#path" class="pulse-glow w-full rounded-full bg-[#6f1d3d] px-8 py-4 text-center text-base font-semibold text-white transition hover:-translate-y-1 hover:bg-[#57142f] sm:w-auto">Открыть путь</a>
+            <button id="musicToggle" class="w-full rounded-full border border-[#6f1d3d]/25 px-8 py-4 text-base font-semibold text-[#6f1d3d] transition hover:-translate-y-1 hover:bg-white/40 sm:w-auto">Включить атмосферу</button>
           </div>
-          <p class="mt-3 sm:mt-4 text-xs sm:text-sm text-[#6f1d3d]/55">15 фактов появятся по одному - не торопись ♥</p>
+          <p class="mt-4 text-sm text-[#6f1d3d]/55">15 фактов появятся по одному - не торопись ♥</p>
+          <p class="mt-1 text-xs italic text-[#6f1d3d]/45">♪ в атмосфере звучит оригинал «You Are My Destiny» — Paul Anka</p>
         </div>
       </div>
     </section>
 
     <!-- ПУТЬ ПО ФАКТАМ -->
-    <section id="path" class="px-4 py-12 sm:px-10 sm:py-20 lg:px-16">
+    <section id="path" class="px-6 py-20 sm:px-10 lg:px-16">
       <div class="mx-auto max-w-3xl">
 
         <!-- шагомер -->
         <div id="stepper">
-          <div class="mb-6 sm:mb-10 text-center">
-            <p class="text-xs sm:text-sm font-semibold uppercase tracking-[0.3em] sm:tracking-[0.38em] text-[#6f1d3d]/65">путь по фактам</p>
-            <h2 class="mt-3 sm:mt-4 text-2xl sm:text-4xl lg:text-5xl font-black tracking-[-0.04em] text-[#6f1d3d]">15 фактов, которые нельзя забыть</h2>
+          <div class="mb-10 text-center">
+            <p class="text-sm font-semibold uppercase tracking-[0.38em] text-[#6f1d3d]/65">путь по фактам</p>
+            <h2 class="mt-4 text-4xl font-black tracking-[-0.04em] text-[#6f1d3d] sm:text-5xl">15 фактов, которые нельзя забыть</h2>
           </div>
 
           <!-- прогресс -->
-          <div class="mb-5 sm:mb-8">
-            <div class="mb-2 sm:mb-3 flex items-center justify-between text-xs sm:text-sm font-semibold text-[#6f1d3d]/80">
+          <div class="mb-8">
+            <div class="mb-3 flex items-center justify-between text-sm font-semibold text-[#6f1d3d]/80">
               <span id="counter">Факт 1 из 15</span>
               <span id="answeredTag">0 отвечено</span>
             </div>
-            <div class="progress-track h-2 sm:h-2.5 w-full overflow-hidden rounded-full">
+            <div class="progress-track h-2.5 w-full overflow-hidden rounded-full">
               <div id="progressFill" class="progress-fill h-full rounded-full" style="width:6.6%"></div>
             </div>
           </div>
 
           <!-- карточка факта -->
-          <div id="factCard" class="fact-card min-h-[280px] sm:min-h-[360px] rounded-2xl sm:rounded-[2rem] border border-[#6f1d3d]/15 bg-white/55 p-5 sm:p-8 lg:p-12 shadow-[0_24px_70px_rgba(111,29,61,0.12)] backdrop-blur" style="touch-action: pan-y;"></div>
+          <div id="factCard" class="fact-card min-h-[360px] rounded-[2rem] border border-[#6f1d3d]/15 bg-white/55 p-8 shadow-[0_24px_70px_rgba(111,29,61,0.12)] backdrop-blur sm:p-12"></div>
 
           <!-- навигация -->
-          <div class="mt-5 sm:mt-8 flex items-center justify-between gap-3 sm:gap-4">
-            <button id="prevBtn" class="nav-btn rounded-full border border-[#6f1d3d]/25 bg-white/40 px-4 sm:px-7 py-3 sm:py-3.5 text-sm sm:text-base font-semibold text-[#6f1d3d] transition active:scale-95 hover:-translate-y-1 hover:bg-white/70">← Назад</button>
-            <button id="nextBtn" class="nav-btn rounded-full bg-[#6f1d3d] px-5 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-semibold text-white transition active:scale-95 hover:-translate-y-1 hover:bg-[#57142f]">Дальше →</button>
+          <div class="mt-8 flex items-stretch justify-between gap-3 sm:items-center sm:gap-4">
+            <button id="prevBtn" class="nav-btn flex-1 rounded-full border border-[#6f1d3d]/25 bg-white/40 px-4 py-3.5 text-sm font-semibold text-[#6f1d3d] transition hover:-translate-y-1 hover:bg-white/70 sm:flex-initial sm:px-7 sm:text-base">← Назад</button>
+            <button id="nextBtn" class="nav-btn flex-1 rounded-full bg-[#6f1d3d] px-4 py-3.5 text-sm font-semibold text-white transition hover:-translate-y-1 hover:bg-[#57142f] sm:flex-initial sm:px-8 sm:text-base">Дальше →</button>
           </div>
-          <p id="hintText" class="mt-3 sm:mt-5 text-center text-xs sm:text-sm text-[#6f1d3d]/55"></p>
+          <p id="hintText" class="mt-5 text-center text-sm text-[#6f1d3d]/55">Подсказка: можно листать стрелками ← → на клавиатуре</p>
         </div>
 
         <!-- ИТОГ (скрыт по умолчанию) -->
         <div id="review" class="hidden">
-          <div class="mb-6 sm:mb-10 text-center">
-            <p class="text-xs sm:text-sm font-semibold uppercase tracking-[0.3em] sm:tracking-[0.38em] text-[#6f1d3d]/65">финал пути</p>
-            <h2 class="mt-3 sm:mt-4 text-2xl sm:text-4xl lg:text-5xl font-black tracking-[-0.04em] text-[#6f1d3d]">Все факты и твои ответы</h2>
-            <p id="collectedSentence" class="mx-auto mt-4 sm:mt-6 max-w-2xl text-lg sm:text-2xl font-semibold leading-7 sm:leading-9 text-[#6f1d3d]"></p>
-            <p id="answeredCount" class="mt-2 sm:mt-3 text-sm sm:text-base text-[#3b1d2d]/70"></p>
+          <div class="mb-10 text-center">
+            <p class="text-sm font-semibold uppercase tracking-[0.38em] text-[#6f1d3d]/65">финал пути</p>
+            <h2 class="mt-4 text-4xl font-black tracking-[-0.04em] text-[#6f1d3d] sm:text-5xl">Все факты и твои ответы</h2>
+            <p id="collectedSentence" class="mx-auto mt-6 max-w-2xl px-2 text-xl font-semibold leading-8 text-[#6f1d3d] sm:text-2xl sm:leading-9"></p>
+            <p id="answeredCount" class="mt-3 text-base text-[#3b1d2d]/70"></p>
           </div>
 
-          <div id="reviewList" class="space-y-3 sm:space-y-5"></div>
+          <div id="reviewList" class="space-y-5"></div>
 
-          <div class="mt-8 sm:mt-12 text-center">
-            <button id="openLetter" class="w-full sm:w-auto rounded-full bg-[#6f1d3d] px-7 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-semibold text-white transition active:scale-95 hover:-translate-y-1 hover:bg-[#57142f]">Открыть письмо</button>
+          <div class="mt-12 flex justify-center px-0">
+            <button id="openLetter" class="w-full rounded-full bg-[#6f1d3d] px-8 py-4 font-semibold text-white transition hover:-translate-y-1 hover:bg-[#57142f] sm:w-auto">Открыть письмо</button>
           </div>
 
-          <div id="letter" class="letter-reveal mx-auto mt-6 sm:mt-8 max-w-2xl">
-            <div class="rounded-2xl sm:rounded-[2rem] border border-[#6f1d3d]/15 bg-white/55 p-5 sm:p-8 lg:p-10 text-left shadow-[0_24px_70px_rgba(111,29,61,0.12)] backdrop-blur">
-              <p class="text-base sm:text-xl leading-7 sm:leading-9 text-[#3b1d2d]/82">
+          <div id="letter" class="letter-reveal mx-auto mt-8 max-w-2xl">
+            <div class="rounded-[2rem] border border-[#6f1d3d]/15 bg-white/55 p-8 text-left shadow-[0_24px_70px_rgba(111,29,61,0.12)] backdrop-blur sm:p-10">
+              <p class="text-xl leading-9 text-[#3b1d2d]/82">
                 Настя, если однажды день покажется трудным - вернись сюда. Ты красивая, добрая, умная, любимая, нежная, веселая, заботливая, искренняя, сильная, талантливая, особенная, вдохновляющая, уютная, незаменимая и моя. Это не просто красивые слова - это факты, которые я готов напоминать тебе снова и снова.
               </p>
-              <p class="mt-5 sm:mt-7 text-right text-base sm:text-lg font-bold text-[#6f1d3d]">От человека, которому ты очень дорога ♥</p>
+              <p class="mt-7 text-right text-lg font-bold text-[#6f1d3d]">От человека, которому ты очень дорога ♥</p>
             </div>
           </div>
 
-          <div class="mt-7 sm:mt-10 flex flex-col items-center justify-center gap-3 sm:gap-4 sm:flex-row">
-            <button id="restartBtn" class="w-full sm:w-auto rounded-full bg-[#6f1d3d] px-7 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-semibold text-white transition active:scale-95 hover:-translate-y-1 hover:bg-[#57142f]">Пройти путь заново</button>
-            <button id="backBtn" class="w-full sm:w-auto rounded-full border border-[#6f1d3d]/25 bg-white/40 px-7 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-semibold text-[#6f1d3d] transition active:scale-95 hover:-translate-y-1 hover:bg-white/70">Вернуться к фактам</button>
+          <div class="mt-10 flex w-full flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center">
+            <button id="restartBtn" class="w-full rounded-full bg-[#6f1d3d] px-8 py-4 font-semibold text-white transition hover:-translate-y-1 hover:bg-[#57142f] sm:w-auto">Пройти путь заново</button>
+            <button id="backBtn" class="w-full rounded-full border border-[#6f1d3d]/25 bg-white/40 px-8 py-4 font-semibold text-[#6f1d3d] transition hover:-translate-y-1 hover:bg-white/70 sm:w-auto">Вернуться к фактам</button>
           </div>
         </div>
 
@@ -276,23 +292,20 @@
     const review = document.getElementById('review');
     const hintText = document.getElementById('hintText');
 
-    /* ---------- определяем тач-устройство ---------- */
-    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-
     /* ---------- рендер одного факта ---------- */
     function renderFact() {
       const f = facts[current];
       const chosen = answers[current];
       factCard.innerHTML = `
-        <div class="flex items-center gap-3 sm:gap-4">
-          <span class="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-[#6f1d3d] text-base sm:text-lg font-black text-white">${current + 1}</span>
-          <h3 class="text-xl sm:text-2xl lg:text-3xl font-black tracking-[-0.02em] text-[#6f1d3d]">${f.title}</h3>
+        <div class="flex items-start gap-3 sm:items-center sm:gap-4">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#6f1d3d] text-base font-black text-white sm:h-12 sm:w-12 sm:text-lg">${current + 1}</span>
+          <h3 class="text-xl font-black tracking-[-0.02em] text-[#6f1d3d] sm:text-3xl">${f.title}</h3>
         </div>
-        <p class="mt-4 sm:mt-6 text-base sm:text-lg lg:text-xl leading-7 sm:leading-8 text-[#3b1d2d]/80">${f.text}</p>
-        <p class="mt-5 sm:mt-7 text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[#6f1d3d]/55">выбери свой отклик</p>
-        <div class="mt-2.5 sm:mt-3 flex flex-col sm:flex-row flex-wrap gap-2.5 sm:gap-3">
+        <p class="mt-5 text-base leading-7 text-[#3b1d2d]/80 sm:mt-6 sm:text-xl sm:leading-8">${f.text}</p>
+        <p class="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-[#6f1d3d]/55 sm:mt-7 sm:text-sm">выбери свой отклик</p>
+        <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           ${f.answers.map(a => `
-            <button class="answer-btn w-full sm:w-auto rounded-full border border-[#6f1d3d]/25 bg-white/45 px-5 sm:px-6 py-3 sm:py-3 text-sm sm:text-base font-semibold text-[#6f1d3d]" data-answer="${a}">${a}</button>
+            <button class="answer-btn rounded-full border border-[#6f1d3d]/25 bg-white/45 px-6 py-3 font-semibold text-[#6f1d3d]" data-answer="${a}">${a}</button>
           `).join('')}
         </div>
       `;
@@ -341,17 +354,11 @@
       // Подсказка
       if (!hasAnswer && current < total - 1) {
         hintText.innerHTML = '<span class="warning-text">❤️ Выбери ответ, чтобы перейти дальше</span>';
-        hintText.className = 'mt-3 sm:mt-5 text-center text-xs sm:text-sm text-[#6f1d3d]/55';
       } else if (!hasAnswer && current === total - 1) {
         hintText.innerHTML = '<span class="warning-text">❤️ Выбери ответ, чтобы увидеть итог</span>';
-        hintText.className = 'mt-3 sm:mt-5 text-center text-xs sm:text-sm text-[#6f1d3d]/55';
       } else {
-        if (isTouchDevice) {
-          hintText.innerHTML = '<span class="swipe-hint">👆</span> Свайпни влево или нажми "Дальше"';
-        } else {
-          hintText.textContent = 'Можно переходить дальше (← → на клавиатуре)';
-        }
-        hintText.className = 'mt-3 sm:mt-5 text-center text-xs sm:text-sm text-green-600';
+        hintText.textContent = 'Можно переходить дальше';
+        hintText.className = 'mt-5 text-center text-sm text-green-600';
       }
     }
 
@@ -359,6 +366,7 @@
 
     nextBtn.addEventListener('click', () => {
       if (!answers[current]) {
+        // Показать предупреждение, что нужно ответить
         factCard.classList.add('shake');
         setTimeout(() => factCard.classList.remove('shake'), 500);
         return;
@@ -380,41 +388,6 @@
       if (e.key === 'ArrowLeft' && !prevBtn.disabled) prevBtn.click();
     });
 
-    /* ---------- свайпы на карточке ---------- */
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let isSwiping = false;
-
-    factCard.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
-      isSwiping = true;
-    }, { passive: true });
-
-    factCard.addEventListener('touchend', (e) => {
-      if (!isSwiping) return;
-      isSwiping = false;
-      const dx = e.changedTouches[0].screenX - touchStartX;
-      const dy = e.changedTouches[0].screenY - touchStartY;
-
-      // горизонтальный свайп должен быть заметнее вертикального
-      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
-
-      if (dx < 0) {
-        // свайп влево = дальше
-        if (!answers[current]) {
-          factCard.classList.add('shake');
-          setTimeout(() => factCard.classList.remove('shake'), 500);
-          return;
-        }
-        if (current < total - 1) { current++; renderFact(); }
-        else { showReview(); }
-      } else {
-        // свайп вправо = назад
-        if (current > 0) { current--; renderFact(); }
-      }
-    }, { passive: true });
-
     /* ---------- экран-итог ---------- */
     function showReview() {
       stepper.classList.add('hidden');
@@ -427,12 +400,12 @@
       document.getElementById('answeredCount').textContent = `Ты ответила на ${words.length} из ${total} фактов.`;
 
       document.getElementById('reviewList').innerHTML = facts.map((f, i) => `
-        <div class="flex gap-3 sm:gap-4 rounded-xl sm:rounded-[1.5rem] border border-[#6f1d3d]/12 bg-white/50 p-4 sm:p-5 lg:p-6 backdrop-blur">
-          <span class="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-[#6f1d3d]/12 text-xs sm:text-sm font-black text-[#6f1d3d]">${i + 1}</span>
+        <div class="flex gap-4 rounded-[1.5rem] border border-[#6f1d3d]/12 bg-white/50 p-5 backdrop-blur sm:p-6">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#6f1d3d]/12 text-sm font-black text-[#6f1d3d]">${i + 1}</span>
           <div class="min-w-0">
-            <h4 class="text-base sm:text-lg font-black text-[#6f1d3d]">${f.title}</h4>
-            <p class="mt-1 text-[13px] sm:text-[15px] leading-6 sm:leading-7 text-[#3b1d2d]/72">${f.text}</p>
-            <span class="mt-2 sm:mt-3 inline-block rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold ${answers[i] ? 'bg-[#6f1d3d] text-white' : 'bg-[#6f1d3d]/10 text-[#6f1d3d]/60'}">${answers[i] || 'еще не выбран'}</span>
+            <h4 class="text-lg font-black text-[#6f1d3d]">${f.title}</h4>
+            <p class="mt-1 text-[15px] leading-7 text-[#3b1d2d]/72">${f.text}</p>
+            <span class="mt-3 inline-block rounded-full px-4 py-1.5 text-sm font-semibold ${answers[i] ? 'bg-[#6f1d3d] text-white' : 'bg-[#6f1d3d]/10 text-[#6f1d3d]/60'}">${answers[i] || 'еще не выбран'}</span>
           </div>
         </div>
       `).join('');
@@ -447,7 +420,10 @@
     }
 
     document.getElementById('openLetter').addEventListener('click', () => {
-      document.getElementById('letter').classList.toggle('open');
+      const letter = document.getElementById('letter');
+      const btn = document.getElementById('openLetter');
+      letter.classList.toggle('open');
+      btn.textContent = letter.classList.contains('open') ? 'Скрыть письмо' : 'Открыть письмо';
     });
     document.getElementById('backBtn').addEventListener('click', () => {
       review.classList.add('hidden');
@@ -473,10 +449,47 @@
 
     let isAtmosphereOn = false;
     let heartInterval = null;
-    let audioContext = null;
-    let musicTimer = null;
-    let noteIndex = 0;
-    const notes = [392, 440, 523.25, 440, 349.23, 392, 587.33, 523.25];
+
+    /* ---------- фоновая музыка: оригинал "You Are My Destiny" (Paul Anka) ---------- */
+    const YT_VIDEO_ID = 'k7fihig4u0Y';
+    let ytPlayer = null;
+    let ytReady = false;
+    let ytWantPlay = false; // флаг, если нажали кнопку до готовности плеера
+
+    // глобальный колбэк для YouTube IFrame API
+    window.onYouTubeIframeAPIReady = function () {
+      ytPlayer = new YT.Player('ytPlayer', {
+        videoId: YT_VIDEO_ID,
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          disablekb: 1,
+          loop: 1,
+          playlist: YT_VIDEO_ID, // нужен для зацикливания одного видео
+          modestbranding: 1,
+          rel: 0,
+          playsinline: 1,
+          iv_load_policy: 3
+        },
+        events: {
+          onReady: function () {
+            ytReady = true;
+            ytPlayer.setVolume(55);
+            if (ytWantPlay) ytPlayer.playVideo();
+          },
+          onStateChange: function (e) {
+            // дополнительная страховка зацикливания
+            if (e.data === YT.PlayerState.ENDED) {
+              ytPlayer.seekTo(0);
+              ytPlayer.playVideo();
+            }
+          },
+          onError: function () {
+            alert('Не удалось загрузить трек с YouTube. Попробуй обновить страницу.');
+          }
+        }
+      });
+    };
 
     function heartSvg(color, size) {
       return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7.5-4.9-10-9.3C-.5 7.7 2 4 5.5 4 7.7 4 9.2 5.2 12 7.4 14.8 5.2 16.3 4 18.5 4 22 4 24.5 7.7 22 11.7 19.5 16.1 12 21 12 21z"/></svg>`;
@@ -485,7 +498,7 @@
     function spawnHeart() {
       const heart = document.createElement('div');
       heart.className = 'falling-heart';
-      const size = (isTouchDevice ? 10 : 14) + Math.random() * (isTouchDevice ? 18 : 26);
+      const size = 14 + Math.random() * 26;
       const dur = 6 + Math.random() * 6;
       const color = heartColors[Math.floor(Math.random() * heartColors.length)];
       heart.style.left = `${Math.random() * 100}%`;
@@ -502,10 +515,7 @@
       for (let i = 0; i < n; i++) setTimeout(spawnHeart, i * 90);
     }
 
-    async function toggleAtmosphere() {
-      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioContext.state === 'suspended') await audioContext.resume();
-
+    function toggleAtmosphere() {
       isAtmosphereOn = !isAtmosphereOn;
       heartsLayer.classList.toggle('hidden', !isAtmosphereOn);
 
@@ -520,27 +530,26 @@
 
       if (isAtmosphereOn) {
         for (let i = 0; i < 6; i++) setTimeout(spawnHeart, i * 120);
-        // На телефонах реже спавним сердечки для производительности
-        heartInterval = setInterval(spawnHeart, isTouchDevice ? 650 : 420);
-        playNote();
-        musicTimer = setInterval(playNote, 720);
+        heartInterval = setInterval(spawnHeart, 420);
+        playTrack();
       } else {
         clearInterval(heartInterval);
-        clearInterval(musicTimer);
+        pauseTrack();
       }
     }
 
-    function playNote() {
-      const osc = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = notes[noteIndex % notes.length];
-      gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.07, audioContext.currentTime + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.5);
-      osc.connect(gain); gain.connect(audioContext.destination);
-      osc.start(); osc.stop(audioContext.currentTime + 0.55);
-      noteIndex += 1;
+    function playTrack() {
+      if (!ytReady || !ytPlayer) {
+        ytWantPlay = true; // запустим, как только плеер будет готов
+        return;
+      }
+      ytPlayer.setVolume(55);
+      ytPlayer.playVideo();
+    }
+
+    function pauseTrack() {
+      ytWantPlay = false;
+      if (ytReady && ytPlayer) ytPlayer.pauseVideo();
     }
 
     musicButton.addEventListener('click', toggleAtmosphere);
